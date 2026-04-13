@@ -7,6 +7,8 @@ from shirts import (CanWeDoBetterEarthyGreen, CanWeDoBetterTangyOrange,
 class Sticker:
     def __init__(self):
         self._data = {i: 0 for i in Stickers}
+        self.random_stickers = {i: 0 for i in Stickers}
+        
         self._smiski = [Stickers.S1, Stickers.S2, 
                         Stickers.S3, Stickers.S4]
         self._meme = [Stickers.M1, Stickers.M2, Stickers.M3, 
@@ -18,6 +20,14 @@ class Sticker:
                            Stickers.DC3, Stickers.DC4]
         self._jji = [Stickers.JI1, Stickers.JI2, Stickers.JI3, 
                      Stickers.JI4, Stickers.JI5, Stickers.JI6]
+        
+    def print_random_stickers(self):
+        print("Note that these values are automatically added to main list!\n")
+        print("Gacha Stickers")
+        for item, quantity in self.random_stickers.items():
+            if quantity != 0:
+                print(f"{str(item)}: {quantity}")
+
 
     def print_data(self):
         print("Smiski")
