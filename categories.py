@@ -3,6 +3,7 @@ from pins import Pins
 from lanyards import Lanyards
 from shirts import (CanWeDoBetterEarthyGreen, CanWeDoBetterTangyOrange, 
                     CanWeDoBetterCrimsonRed, BruteForceDark, BruteForceLight)
+from cards import Cards
 
 class Sticker:
     def __init__(self):
@@ -27,7 +28,6 @@ class Sticker:
         for item, quantity in self.random_stickers.items():
             if quantity != 0:
                 print(f"{str(item)}: {quantity}")
-
 
     def print_data(self):
         print("Smiski")
@@ -221,3 +221,13 @@ class Shirt:
         for size, quantity in self.light.items():
             print(f"Brute Force Light ({size}): {quantity}")
         print("")
+
+
+class Pack:
+    def __init__(self):
+        self.data: dict[str, int] = {str(i):0 for i in Cards}
+
+    def print_data(self):
+        print("Overload Packs")
+        for pack, qty in self.data.items():
+            print(f"{pack}: {qty}")
