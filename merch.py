@@ -1,8 +1,8 @@
 import pandas as pd
 import re
 from random import choice
-from categories import (Sticker, Pin, ToteBag, 
-                        Keychain, Lanyard, IdCase, Shirt)
+from categories import (Sticker, Pin, ToteBag, Keychain, 
+                        Lanyard, IdCase, Shirt, Pack)
 from shirts import (CanWeDoBetterEarthyGreen, CanWeDoBetterTangyOrange, 
                     CanWeDoBetterCrimsonRed, BruteForceDark, BruteForceLight)
 from stickers import Stickers
@@ -10,7 +10,7 @@ from lanyards import Lanyards
 from pins import Pins
 
 class Merch:
-    def __init__(self, data: str):
+    def __init__(self, data: str, start: int, end: int):
         self._data = data
         self._is_processed: bool = False
         self.sticker = Sticker()
@@ -26,6 +26,12 @@ class Merch:
         self.light = BruteForceLight()
         self.shirt = Shirt(self.green, self.orange, 
                            self.red, self.dark, self.light)
+        self.pack = Pack()
+        self.merch = [self.sticker, self.keychain, self.lanyard, self.pin,
+                      self.idcase, self.totebag, self.shirt, self.pack]
+        
+        self.start = start - 2  # Initial value should be as shown in sheets
+        self.end = end - 1  # Initial value should be as shown in sheets
         
     @property
     def is_processed(self) -> bool:
@@ -38,7 +44,6 @@ class Merch:
     def process_data(self):
         if not self.is_processed:
             purchased: "pd.Series[str]" = self.get_purchased(self.data)
-
             for item in purchased:
                 products: list[str] = item.splitlines()[:-1]
 
@@ -242,6 +247,14 @@ class Merch:
                         qty = int(parameters_str.split(", ")[1][-1])
                         self.totebag.quantity += qty
 
+                    elif "OVERLOAD: The Official DCS Trading Card Game" in product:
+                        parameters = re.search(r'\((.*?)\)', product)
+                        parameters_str = parameters.group(1)
+                        data = parameters_str.split(", ")[1:]
+                        quantity = int(data[0].strip("Quantity: "))
+                        type_pack = data[1].strip("Pack: ")
+                        self.pack.data[type_pack] += quantity
+
             self._is_processed = True
         
         else:
@@ -250,7 +263,7 @@ class Merch:
     def get_purchased(self, data: str) -> "pd.Series[str]":
         df = pd.read_excel(data)
         purchased = df["Kindly select the merch you are willing to avail. Product mock ups are for reference only and may slightly vary.: Products"]
-        return purchased
+        return purchased[self.start:self.end]
 
     def extract_stickers(self, data: list[str]) -> list[str]:
         temp: list[str] = []
@@ -271,21 +284,9 @@ class Merch:
         return choice([i for i in Stickers])
 
     def print_all_data(self):
-        self.sticker.print_data()
-        print("")
-        self.keychain.print_data()
-        print("")
-        self.pin.print_data()
-        print("")
-        self.lanyard.print_data()
-        print("")
-        self.idcase.print_data()
-        print("")
-        self.totebag.print_data()
-        print("")
-        self.shirt.print_data()
-        print("")
-        self.print_random_stickers()
+        for item in self.merch:
+            item.print_data()
+            print("")
 
     def print_random_stickers(self):
         self.sticker.print_random_stickers()
